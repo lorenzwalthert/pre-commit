@@ -107,10 +107,10 @@ def install_environment(
               'renv::activate("', file.path(getwd()), '"); '
             )
             writeLines(activate_statement, 'activate.R')
-            is_package <- tryCatch(
+            is_package <- tryCatch({
                 content_desc <- read.dcf(file.path(prefix_dir, 'DESCRIPTION'))
-                suppressWarnings(unname(content_desc[,'Type'] == "Package")
-                ),
+                suppressWarnings(unname(content_desc[,'Type']) == "Package")
+                },
                 error = function(...) FALSE
             )
             if (is_package) {
