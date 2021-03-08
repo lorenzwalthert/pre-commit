@@ -89,22 +89,22 @@ def install_environment(
     with clean_path_on_failure(env_dir):
         os.makedirs(env_dir, exist_ok=True)
         shutil.copy(prefix.path('renv.lock'), env_dir)
+        shutil.copytree(prefix.path('renv'), os.path.join(env_dir, 'renv'))
         cmd_output_b(
             'Rscript', '--vanilla', '-e',
             f"""\
             prefix_dir <- {prefix.prefix_dir!r}
-            missing_pkgs <- setdiff(
-                "renv", unname(installed.packages()[, "Package"])
-            )
             options(
                 repos = c(CRAN = "https://cran.rstudio.com"),
                 renv.consent = TRUE
             )
-            install.packages(missing_pkgs)
-            renv::activate()
+            source("renv/activate.R")
             renv::restore()
             activate_statement <- paste0(
-              'renv::activate("', file.path(getwd()), '"); '
+              'old <- setwd("', getwd(), '"); ',
+              'source("renv/activate.R"); ',
+              'setwd(old); ',
+              'renv::activate("', getwd(), '"); '
             )
             writeLines(activate_statement, 'activate.R')
             is_package <- tryCatch({{
@@ -120,12 +120,13 @@ def install_environment(
             cwd=env_dir,
         )
         if additional_dependencies:
-            cmd_output_b(
-                'Rscript', '-e',
-                'renv::install(commandArgs(trailingOnly = TRUE))',
-                *additional_dependencies,
-                cwd=env_dir,
-            )
+            with in_env(prefix, version):
+                cmd_output_b(
+                    'Rscript', '-e',
+                    'renv::install(commandArgs(trailingOnly = TRUE))',
+                    *additional_dependencies,
+                    cwd=env_dir,
+                )
 
 
 def run_hook(
