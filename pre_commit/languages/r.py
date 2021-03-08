@@ -92,7 +92,7 @@ def install_environment(
         cmd_output_b(
             'Rscript', '--vanilla', '-e',
             f"""\
-            prefix_dir <- "{prefix.prefix_dir}"
+            prefix_dir <- "{os.path.normpath(prefix.prefix_dir)}"
             missing_pkgs <- setdiff(
                 "renv", unname(installed.packages()[, "Package"])
             )
