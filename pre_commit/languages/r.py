@@ -91,8 +91,8 @@ def install_environment(
         shutil.copy(prefix.path('renv.lock'), env_dir)
         cmd_output_b(
             'Rscript', '--vanilla', '-e',
-            "prefix_dir <- '" + prefix.prefix_dir + "'" +
-            """
+            f"""\
+            prefix_dir <- "{prefix.prefix_dir}"
             missing_pkgs <- setdiff(
                 "renv", unname(installed.packages()[, "Package"])
             )
@@ -107,15 +107,15 @@ def install_environment(
               'renv::activate("', file.path(getwd()), '"); '
             )
             writeLines(activate_statement, 'activate.R')
-            is_package <- tryCatch({
+            is_package <- tryCatch({{
                 content_desc <- read.dcf(file.path(prefix_dir, 'DESCRIPTION'))
                 suppressWarnings(unname(content_desc[,'Type']) == "Package")
-                },
+                }},
                 error = function(...) FALSE
             )
-            if (is_package) {
+            if (is_package) {{
                 renv::install(prefix_dir)
-            }
+            }}
             """,
             cwd=env_dir,
         )
