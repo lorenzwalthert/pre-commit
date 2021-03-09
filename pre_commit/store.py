@@ -189,7 +189,7 @@ class Store:
     LOCAL_RESOURCES = (
         'Cargo.toml', 'main.go', 'go.mod', 'main.rs', '.npmignore',
         'package.json', 'pre_commit_dummy_package.gemspec', 'setup.py',
-        'environment.yml', 'Makefile.PL', 'renv.lock',
+        'environment.yml', 'Makefile.PL', 'renv.lock', 'renv/activate.R',
     )
 
     def make_local(self, deps: Sequence[str]) -> str:
