@@ -167,7 +167,6 @@ def _inline_r_setup(code: str) -> str:
     with_option = [
         textwrap.dedent("""\
         options(
-            install.packages.compile.from.source = "never",
             pkgType = "binary"
         )
         """),
